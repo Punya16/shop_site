@@ -1,8 +1,9 @@
-//screens/SignUpScreen.tsx
+// frontend/screens/SignUpScreen.tsx
 
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { StackNavigationProp } from '@react-navigation/stack';
+import axios from 'axios';
 
 type RootStackParamList = {
   Login: undefined;
@@ -22,10 +23,30 @@ const SignUpScreen: React.FC<SignupProps> = ({ navigation }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSignup = () => {
-    // Logic for handling signup with the form data
-    console.log(`Signing up with name: ${name}, email: ${email}, phone: ${phone}, username: ${username}, password: ${password}`);
+  const handleSignup = async () => {
+    try {
+      if (password !== confirmPassword) {
+        setError("Password and Confirm Password don't match");
+        return;
+      }
+
+      const userData = {
+        name,
+        email,
+        phone,
+        username,
+        password,
+      };
+
+      const response = await axios.post('http://localhost:3000/user/signup', userData);
+
+      console.log(response.data);
+    } catch (error: any) {
+      console.error('Error during signup:', error.message);
+      // Handle the error, show a user-friendly message, or log it for debugging
+    }
   };
 
   const handleLoginNavigation = () => {
@@ -87,7 +108,8 @@ const SignUpScreen: React.FC<SignupProps> = ({ navigation }) => {
           onChangeText={(text) => setConfirmPassword(text)}
         />
       </View>
-      <TouchableOpacity style={[styles.signupBtn,Platform.OS === 'web' && styles.webSignupBtn]} onPress={handleSignup}>
+      {error && <Text style={styles.errorText}>{error}</Text>}
+      <TouchableOpacity style={[styles.signupBtn, Platform.OS === 'web' && styles.webSignupBtn]} onPress={handleSignup}>
         <Text style={styles.signupText}>SIGN UP</Text>
       </TouchableOpacity>
       <TouchableOpacity onPress={handleLoginNavigation}>
@@ -106,7 +128,7 @@ const styles = StyleSheet.create({
   },
   logo: {
     fontWeight: 'bold',
-    fontSize: Platform.OS === 'ios' ? 50 : 40, // Adjust font size for different platforms
+    fontSize: Platform.OS === 'ios' ? 50 : 40,
     color: '#fb5b5a',
     marginBottom: 40,
   },
@@ -142,16 +164,20 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: 'bold',
   },
+  errorText: {
+    color: 'red',
+    marginBottom: 10,
+  },
   // Add styles specific to web platform
   webInputView: {
-    width: '25%', // Adjusted width for web
+    width: '25%',
   },
   webInputText: {
-    width: '100%', // Full width for web input text
+    width: '100%',
   },
   webSignupBtn: {
-    width: '10%', // Adjusted width for web
-    height: 40, // Adjusted height for web
+    width: '10%',
+    height: 40,
   },
 });
 

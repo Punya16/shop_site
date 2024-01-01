@@ -1,12 +1,13 @@
-//screens/LoginScreen.tsx
-
-import React from 'react';
+// frontend/screens/LoginScreen.tsx
+import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import axios from 'axios';
 import { StackNavigationProp } from '@react-navigation/stack';
 
 type RootStackParamList = {
   Login: undefined;
   Signup: undefined;
+  Products: undefined;
 };
 
 type LoginScreenNavigationProp = StackNavigationProp<RootStackParamList, 'Login'>;
@@ -16,8 +17,30 @@ interface LoginProps {
 }
 
 const LoginScreen: React.FC<LoginProps> = ({ navigation }) => {
-  const handleLogin = () => {
-    // Logic for handling login
+  const [username, setUsername] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleLogin = async () => {
+    try {
+      const loginData = {
+        username,
+        password,
+      };
+
+      // Make a POST request to your NestJS backend to authenticate the user
+      const response = await axios.post('http://localhost:3000/user/login', loginData);
+
+      // If authentication is successful, navigate to the Products page
+      if (response.data.success) {
+        navigation.navigate('Products');
+      } else {
+        console.log('Invalid credentials');
+        // Handle invalid credentials, show a user-friendly message, or log it for debugging
+      }
+    } catch (error: any) {
+      console.error('Error during login:', error.message);
+      // Handle the error, show a user-friendly message, or log it for debugging
+    }
   };
 
   const handleSignupNavigation = () => {
@@ -32,7 +55,7 @@ const LoginScreen: React.FC<LoginProps> = ({ navigation }) => {
           style={[styles.inputText, Platform.OS === 'web' && styles.webInputText]}
           placeholder="Username"
           placeholderTextColor="#FFFFFF"
-          onChangeText={(text) => {}}
+          onChangeText={(text) => setUsername(text)}
         />
       </View>
       <View style={[styles.inputView, Platform.OS === 'web' && styles.webInputView]}>
@@ -41,7 +64,7 @@ const LoginScreen: React.FC<LoginProps> = ({ navigation }) => {
           placeholder="Password"
           placeholderTextColor="#FFFFFF"
           secureTextEntry={true}
-          onChangeText={(text) => {}}
+          onChangeText={(text) => setPassword(text)}
         />
       </View>
       <TouchableOpacity style={[styles.loginBtn, Platform.OS === 'web' && styles.webLoginBtn]} onPress={handleLogin}>
