@@ -43,6 +43,7 @@ const SignUpScreen: React.FC<SignupProps> = ({ navigation }) => {
       const response = await axios.post('http://localhost:3000/user/signup', userData);
 
       console.log(response.data);
+      navigation.navigate('Login');
     } catch (error: any) {
       console.error('Error during signup:', error.message);
       // Handle the error, show a user-friendly message, or log it for debugging
