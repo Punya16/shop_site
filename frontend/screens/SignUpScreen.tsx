@@ -1,4 +1,4 @@
-// frontend/screens/SignUpScreen.tsx
+
 
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Platform } from 'react-native';

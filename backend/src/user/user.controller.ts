@@ -1,5 +1,3 @@
-// src/user/user.controller.ts
-
 import { Controller, Post, Body } from '@nestjs/common';
 import { SupabaseService } from '../supabase.service';
 
